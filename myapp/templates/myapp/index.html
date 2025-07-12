@@ -3,17 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Consumed Foods</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
 </head>
 <body>
-  <form method="POST">
-    {% csrf_token %}
-    <select name="consumedFood" id="consumedFood">
-      {% for food in foods %}
-        <option value="{{ food.name }}">{{ food.name }}</option>
-      {% endfor %}
-    </select>
-    <button type="submit">Add</button>
-  </form>
+
+  <div class="container mt-5">
+    <!-- Form Section -->
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <form class="form-inline justify-content-center" method="POST">
+          {% csrf_token %}
+          <div class="form-group mb-2 mr-3">
+            <label for="consumedFood" class="mr-2">Select and Add:</label>
+            <select class="form-control" name="consumedFood" id="consumedFood">
+              {% for food in foods %}
+                <option value="{{ food.name }}">{{ food.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success mb-2">Add</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Consumed Food Table -->
+    <div class="row mt-5">
+      <div class="col-md-10 offset-md-1">
+        <h3 class="mb-3 text-center">Consumed Foods</h3>
+
+        {% if consumedFoodsUser %}
+          <table class="table table-bordered table-hover text-center">
+            <thead class="thead-dark">
+              <tr>
+                <th>Food Name</th>
+                <th>Calories</th>
+                <th>Carbs</th>
+                <th>Protein</th>
+                <th>Fats</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in consumedFoodsUser %}
+                <tr>
+                  <td>{{ item.consumedFood.name }}</td>
+                  <td>{{ item.consumedFood.calories }}</td>
+                  <td>{{ item.consumedFood.carbs }}</td>
+                  <td>{{ item.consumedFood.protein }}</td>
+                  <td>{{ item.consumedFood.fats }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="alert alert-info text-center w-100">No foods consumed yet.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
