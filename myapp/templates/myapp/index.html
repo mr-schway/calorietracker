@@ -35,7 +35,7 @@
         <h3 class="mb-3 text-center">Consumed Foods</h3>
 
         {% if consumedFoodsUser %}
-          <table class="table table-bordered table-hover text-center">
+          <table class="table table-bordered table-hover text-center" id="table">
             <thead class="thead-dark">
               <tr>
                 <th>Food Name</th>
@@ -55,6 +55,13 @@
                   <td>{{ item.consumedFood.fats }}</td>
                 </tr>
               {% endfor %}
+              <tr>
+                <td id="name"><b>Total</b></td>
+                <td id="totalCalories"><b></b></td>
+                <td id="totalCarbs"><b></b></td>
+                <td id="totalProtein"><b></b></td>
+                <td id="totalFats"><b></b></td>
+              </tr>
             </tbody>
           </table>
         {% else %}
@@ -65,4 +72,24 @@
   </div>
 
 </body>
+<script>
+  var table = document.getElementById("table");
+  var calories = 0, carbs = 0, protein = 0, fats = 0;
+
+  for(var i = 1; i < table.rows.length-1; i++){
+    console.log(table.rows[i].cells[1].innerHTML);
+    calories += parseFloat(table.rows[i].cells[1].innerHTML);
+    calories = Math.round(calories);
+    carbs += parseFloat(table.rows[i].cells[2].innerHTML);
+    carbs = Math.round(carbs);
+    protein += parseFloat(table.rows[i].cells[3].innerHTML);
+    protein = Math.round(protein);
+    fats += parseFloat(table.rows[i].cells[4].innerHTML);
+    fats = Math.round(fats);
+  }
+  document.getElementById("totalCalories").innerHTML = calories;
+  document.getElementById("totalCarbs").innerHTML = carbs;
+  document.getElementById("totalProtein").innerHTML = protein;
+  document.getElementById("totalFats").innerHTML = fats;
+</script>
 </html>
