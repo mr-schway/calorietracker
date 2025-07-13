@@ -13,9 +13,10 @@
   <div class="container mt-5">
     <!-- Form Section -->
     <div class="row justify-content-center">
-      <div class="col-md-8">
+      <div class="col-auto">
         <form class="form-inline justify-content-center" method="POST">
           {% csrf_token %}
+          <input type="hidden" name="form_type" value="add_food">
           <div class="form-group mb-2 mr-3">
             <label for="consumedFood" class="mr-2">Select and Add:</label>
             <select class="form-control" name="consumedFood" id="consumedFood">
@@ -27,6 +28,26 @@
           <button type="submit" class="btn btn-success mb-2">Add</button>
         </form>
       </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <form class="form-inline justify-content-center" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="set_goal">
+          <div class="form-group mb-2 mr-3">
+            <label for="calorieGoal" class="mr-2">Your Calorie Goal:</label>
+            <input type="text" class="form-control" id="calorieGoal" name="calorieGoal" placeholder="2000">
+          </div>
+          <button type="submit" class="btn btn-success mb-2">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <h4 id="h4">Calorie: </h4>
+    <div class="progress">
+      <div class="progress-bar bg-success" role="progressbar" style="width: 27%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">27%</div>
     </div>
 
     <!-- Consumed Food Table -->
@@ -76,20 +97,35 @@
   var table = document.getElementById("table");
   var calories = 0, carbs = 0, protein = 0, fats = 0;
 
-  for(var i = 1; i < table.rows.length-1; i++){
-    console.log(table.rows[i].cells[1].innerHTML);
+  for (var i = 1; i < table.rows.length - 1; i++) {
     calories += parseFloat(table.rows[i].cells[1].innerHTML);
-    calories = Math.round(calories);
     carbs += parseFloat(table.rows[i].cells[2].innerHTML);
-    carbs = Math.round(carbs);
     protein += parseFloat(table.rows[i].cells[3].innerHTML);
-    protein = Math.round(protein);
     fats += parseFloat(table.rows[i].cells[4].innerHTML);
-    fats = Math.round(fats);
   }
+
+  calories = Math.round(calories);
+  carbs = Math.round(carbs);
+  protein = Math.round(protein);
+  fats = Math.round(fats);
+
   document.getElementById("totalCalories").innerHTML = calories;
   document.getElementById("totalCarbs").innerHTML = carbs;
   document.getElementById("totalProtein").innerHTML = protein;
   document.getElementById("totalFats").innerHTML = fats;
+
+  // Pass calorieGoal from Django safely
+  // let calorieGoal = 2000;
+  // calorieGoal = {{ calorieGoal }};
+  let calorieGoal = parseInt("{{ calorieGoal|default:'2000' }}");
+  
+  // Update progress bar
+  let calPer = Math.min((calories / calorieGoal) * 100, 100).toFixed(0); // Clamp to 100%
+  const progressBar = document.getElementsByClassName("progress-bar")[0];
+  progressBar.style.width = calPer + "%";
+  progressBar.innerHTML = calPer + "%";
+
+  // Display summary
+  document.getElementById("h4").innerHTML = "Calorie: " + calories + " / " + calorieGoal;
 </script>
 </html>

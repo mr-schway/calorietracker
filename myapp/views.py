@@ -1,16 +1,35 @@
 from django.shortcuts import render
+from myapp.models import Consume, Food, UserProfile
 
-from myapp.models import Consume, Food
-
-# Create your views here.
 def index(request):
   if request.method == "POST":
-    # consumedFood = request.POST['consumedFood']
-    consumedFoodName = request.POST.get('consumedFood', '') # or this
-    food = Food.objects.get(name = consumedFoodName)
-    user = request.user
-    consume = Consume(consumedFood = food, user = user)
-    consume.save()
+      form_type = request.POST.get('form_type')
+      user = request.user
+
+      if form_type == 'add_food':
+        consumedFoodName = request.POST.get('consumedFood', '')
+        if consumedFoodName:
+          try:
+            food = Food.objects.get(name=consumedFoodName)
+            Consume.objects.create(consumedFood=food, user=user)
+          except Food.DoesNotExist:
+            pass  # Or handle with a message
+
+      elif form_type == 'set_goal':
+        calorieGoal = int(request.POST.get('calorieGoal', 0))
+        if calorieGoal > 0:
+          UserProfile.objects.update_or_create(
+             user=user,
+             defaults={'calorieGoal': calorieGoal}
+            )
+
   foods = Food.objects.all()
-  consumedFoodsUser = Consume.objects.filter(user = request.user)
-  return render(request, 'myapp/index.html', {'foods': foods, 'consumedFoodsUser': consumedFoodsUser})
+  consumedFoodsUser = Consume.objects.filter(user=request.user)
+  profile, _ = UserProfile.objects.get_or_create(user=request.user)
+  calorieGoal = profile.calorieGoal
+
+  return render(request, 'myapp/index.html', {
+    'foods': foods,
+    'consumedFoodsUser': consumedFoodsUser,
+    'calorieGoal': calorieGoal
+  })
